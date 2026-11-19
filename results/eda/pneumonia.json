@@ -1,0 +1,68 @@
+{
+  "train": {
+    "split": "train",
+    "n_samples": 4708,
+    "shape": [
+      4708,
+      28,
+      28
+    ],
+    "dtype": "uint8",
+    "pixel_min": 0.0,
+    "pixel_max": 255.0,
+    "pixel_mean": 145.839996,
+    "pixel_std": 42.929573,
+    "class_counts": {
+      "0": 1214,
+      "1": 3494
+    },
+    "class_rates": {
+      "0": 0.257859,
+      "1": 0.742141
+    }
+  },
+  "val": {
+    "split": "val",
+    "n_samples": 524,
+    "shape": [
+      524,
+      28,
+      28
+    ],
+    "dtype": "uint8",
+    "pixel_min": 0.0,
+    "pixel_max": 255.0,
+    "pixel_mean": 145.135742,
+    "pixel_std": 43.065533,
+    "class_counts": {
+      "0": 135,
+      "1": 389
+    },
+    "class_rates": {
+      "0": 0.257634,
+      "1": 0.742366
+    }
+  },
+  "test": {
+    "split": "test",
+    "n_samples": 624,
+    "shape": [
+      624,
+      28,
+      28
+    ],
+    "dtype": "uint8",
+    "pixel_min": 0.0,
+    "pixel_max": 254.0,
+    "pixel_mean": 143.812103,
+    "pixel_std": 43.19434,
+    "class_counts": {
+      "0": 234,
+      "1": 390
+    },
+    "class_rates": {
+      "0": 0.375,
+      "1": 0.625
+    }
+  }
+}
