@@ -60,8 +60,7 @@ RAW_COLUMNS: tuple[str, ...] = (
     "default payment next month",
 )
 
-# Raw header -> snake_case name.
-_RENAMES: dict[str, str] = {
+_RAW_TO_SNAKE_CASE: dict[str, str] = {
     "ID": ID_COLUMN,
     "LIMIT_BAL": "limit_bal",
     "SEX": "sex",
@@ -70,9 +69,9 @@ _RENAMES: dict[str, str] = {
     "AGE": "age",
     "default payment next month": TARGET,
 }
-_RENAMES |= {f"PAY_{i}": f"pay_{i}" for i in (0, 2, 3, 4, 5, 6)}
-_RENAMES |= {f"BILL_AMT{i}": f"bill_amt_{i}" for i in range(1, 7)}
-_RENAMES |= {f"PAY_AMT{i}": f"pay_amt_{i}" for i in range(1, 7)}
+_RAW_TO_SNAKE_CASE |= {f"PAY_{i}": f"pay_{i}" for i in (0, 2, 3, 4, 5, 6)}
+_RAW_TO_SNAKE_CASE |= {f"BILL_AMT{i}": f"bill_amt_{i}" for i in range(1, 7)}
+_RAW_TO_SNAKE_CASE |= {f"PAY_AMT{i}": f"pay_amt_{i}" for i in range(1, 7)}
 
 #: Columns that describe the client and may induce bias (documented, not skipped).
 SENSITIVE_COLUMNS: tuple[str, ...] = ("sex", "education", "marriage", "age")
@@ -156,7 +155,7 @@ def clean(frame: pd.DataFrame) -> pd.DataFrame:
     if missing:
         raise ValueError(f"unexpected workbook columns, missing: {sorted(missing)[:5]}")
 
-    frame = frame.rename(columns=_RENAMES)
+    frame = frame.rename(columns=_RAW_TO_SNAKE_CASE)
     frame = frame.apply(pd.to_numeric, errors="coerce")
 
     if frame.isna().any().any():  # pragma: no cover - guarded by a test
