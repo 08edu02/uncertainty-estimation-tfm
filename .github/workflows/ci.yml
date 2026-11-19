@@ -29,15 +29,15 @@ jobs:
       - name: Install dependencies
         run: |
           uv sync --frozen --all-groups --no-install-package torch --no-install-package torchvision
-          uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          uv pip install --python .venv torch torchvision --default-index https://download.pytorch.org/whl/cpu
 
       - name: Lint
         run: |
-          uv run ruff check --output-format=github .
-          uv run ruff format --check .
+          uv run --no-sync ruff check --output-format=github .
+          uv run --no-sync ruff format --check .
 
       - name: Tests
-        run: uv run pytest --cov=uq --cov-report=term-missing
+        run: uv run --no-sync pytest --cov=uq --cov-report=term-missing
 
   lockfile:
     name: lockfile is in sync
