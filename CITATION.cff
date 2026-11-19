@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "Si usas este trabajo, cítalo con estos datos."
+title: "Uncertainty Estimation: comparación de métodos de incertidumbre en clasificación"
+abstract: >-
+  Comparación reproducible de cinco métodos de estimación de incertidumbre
+  (softmax, temperature scaling, MC Dropout, Deep Ensembles y predicción
+  conforme) en dos escenarios independientes de clasificación: datos tabulares
+  de riesgo crediticio e imágenes médicas (MedMNIST). Se evalúan calibración,
+  detección de errores y clasificación selectiva.
+authors:
+  - family-names: Chavarria Mujica
+    given-names: Carlos Eduardo
+type: software
+license: MIT
+repository-code: "https://github.com/08edu02/uncertainty-estimation-tfm"
+url: "https://github.com/08edu02/uncertainty-estimation-tfm"
+version: 0.1.0
+date-released: "2026-11-18"
+keywords:
+  - uncertainty estimation
+  - calibration
+  - conformal prediction
+  - deep ensembles
+  - MC dropout
+  - selective classification
+  - machine learning

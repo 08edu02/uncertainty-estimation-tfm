@@ -1,0 +1,48 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: lint and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+
+      - name: Install Python (pinned in .python-version)
+        run: uv python install
+
+      # The lockfile pins the CUDA build of torch, which is unnecessary in CI.
+      # Install everything else first and then a CPU-only torch/torchvision.
+      - name: Install dependencies
+        run: |
+          uv sync --frozen --all-groups --no-install-package torch --no-install-package torchvision
+          uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Lint
+        run: |
+          uv run ruff check --output-format=github .
+          uv run ruff format --check .
+
+      - name: Tests
+        run: uv run pytest --cov=uq --cov-report=term-missing
+
+  lockfile:
+    name: lockfile is in sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+      - run: uv lock --check
