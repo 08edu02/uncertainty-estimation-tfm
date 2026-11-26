@@ -26,6 +26,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from uq.settings import data_dir
@@ -173,7 +174,18 @@ def load(root: Path | None = None, *, force_download: bool = False) -> pd.DataFr
     return clean(raw)
 
 
+def duplicate_mask(frame: pd.DataFrame) -> np.ndarray:
+    """Boolean mask marking every row whose 23 features repeat an earlier row.
+
+    The target is left out of the comparison on purpose: two clients with the
+    same features but a different outcome are still one duplicated record for
+    the purpose of splitting, and keeping them on both sides of the split would
+    leak information.
+    """
+    features = frame.drop(columns=[TARGET])
+    return features.duplicated(keep="first").to_numpy()
+
+
 def duplicates(frame: pd.DataFrame) -> int:
     """Number of exact duplicate rows, ignoring the target column."""
-    features = frame.drop(columns=[TARGET])
-    return int(features.duplicated().sum())
+    return int(duplicate_mask(frame).sum())

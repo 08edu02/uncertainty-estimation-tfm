@@ -28,6 +28,11 @@ DEFAULT_SIZE = 28
 
 CLASS_NAMES: tuple[str, ...] = ("normal", "pneumonia")
 
+#: Order in which the official splits are concatenated by :func:`load_pooled`.
+#: The indices produced by :func:`uq.data.splits.make_image_split` refer to that
+#: concatenation, so the two must always be used together.
+POOL_ORDER: tuple[str, ...] = ("train", "val", "test")
+
 
 def dataset_dir(root: Path | None = None) -> Path:
     """Folder where MedMNIST stores its ``.npz`` files."""
@@ -73,3 +78,47 @@ def load_split(
     images = np.asarray(dataset.imgs)
     labels = np.asarray(dataset.labels).reshape(-1).astype(np.int64)
     return images, labels
+
+
+def load_pooled(
+    root: Path | None = None,
+    *,
+    size: int = DEFAULT_SIZE,
+    download_if_missing: bool = True,
+) -> tuple[np.ndarray, np.ndarray, dict[str, slice]]:
+    """Concatenate the official splits in :data:`POOL_ORDER`.
+
+    A single array with one index space is what makes the partition auditable:
+    the training code and :func:`uq.data.splits.make_image_split` share the same
+    positions, so a test index can never be confused with a development one.
+
+    Parameters
+    ----------
+    root:
+        Data folder; defaults to :func:`uq.settings.data_dir`.
+    size:
+        Resolution passed to MedMNIST; the project uses 28.
+    download_if_missing:
+        Whether to download the ``.npz`` files when they are absent.
+
+    Returns
+    -------
+    images, labels, bounds
+        Images of shape ``(N, size, size, 1)``, labels of shape ``(N,)`` and the
+        slice each official split occupies in the concatenation.
+    """
+    images: list[np.ndarray] = []
+    labels: list[np.ndarray] = []
+    bounds: dict[str, slice] = {}
+
+    offset = 0
+    for split in POOL_ORDER:
+        split_images, split_labels = load_split(
+            split, root, size=size, download_if_missing=download_if_missing
+        )
+        bounds[split] = slice(offset, offset + split_labels.size)
+        offset += split_labels.size
+        images.append(np.asarray(split_images))
+        labels.append(split_labels)
+
+    return np.concatenate(images, axis=0), np.concatenate(labels), bounds
