@@ -2,7 +2,7 @@
 
 Comparación reproducible de cinco métodos de estimación de incertidumbre en dos escenarios independientes de clasificación: **datos tabulares de riesgo crediticio** e **imágenes médicas**. El objetivo es medir qué tan bien calibrados están los modelos, si su incertidumbre permite **detectar errores** y cuánto baja el error cuando el modelo **se abstiene** en los casos más inciertos.
 
-> **Estado: en desarrollo (semana 1).** Trabajo de Fin de Máster, Maestría en Inteligencia Artificial, curso 2026-27. Entorno reproducible, descarga de datos y EDA mínimo ya funcionando; los modelos y los métodos se añaden en las siguientes semanas (ver [Estado del proyecto](#estado-del-proyecto)).
+> **Estado: en desarrollo (semana 2).** Trabajo de Fin de Máster, Maestría en Inteligencia Artificial, curso 2026-27. Entorno reproducible, descarga de datos, EDA mínimo y métricas propias ya funcionando; los modelos y los métodos se añaden en las siguientes semanas (ver [Estado del proyecto](#estado-del-proyecto)).
 
 ## Resumen
 
@@ -50,11 +50,13 @@ Los dos escenarios se evalúan **por separado**; no se fusionan datos tabulares 
 
 ## Métricas
 
-- **Calibración:** ECE, puntuación de Brier, NLL y diagramas de fiabilidad.
-- **Detección de errores:** AUROC de la puntuación de incertidumbre frente a "predicción errónea".
-- **Clasificación selectiva:** curva riesgo-cobertura, área bajo la curva y error a coberturas fijas.
-- **Predicción conforme:** cobertura empírica, tamaño medio del conjunto y cobertura por clase.
-- **Variabilidad:** varias semillas por experimento, con media, desviación estándar e intervalos de confianza por *bootstrap*.
+Implementadas **desde cero** en `src/uq/metrics/`, con pruebas de respuesta conocida:
+
+- **Calibración:** ECE sobre la clase predicha (15 bins de ancho igual, con variante de igual masa), puntuación de Brier, NLL y curvas de fiabilidad.
+- **Detección de errores:** AUROC y AUPRC de la puntuación de incertidumbre frente a "predicción errónea", más entropía predictiva en nats o bits.
+- **Clasificación selectiva:** curva riesgo-cobertura, área bajo la curva, error a coberturas fijas y umbral correspondiente.
+- **Predicción conforme:** cuantil con corrección de tamaño finito, conjuntos de predicción, cobertura empírica, tamaño medio del conjunto y cobertura por clase.
+- **Variabilidad:** varias semillas por experimento, con media, desviación estándar e intervalos de confianza por *bootstrap* (pendiente).
 
 ## Protocolo experimental
 
@@ -130,19 +132,20 @@ uncertainty-estimation-tfm/
 ├── src/uq/
 │   ├── settings.py           # rutas y variables de entorno
 │   ├── data/                 # credit.py, pneumonia.py
-│   └── eda/                  # summary.py (JSON), figures.py (PNG)
+│   ├── eda/                  # summary.py (JSON), figures.py (PNG)
+│   └── metrics/              # calibración, detección de errores, selectiva, conforme
 ├── scripts/
 │   ├── download_data.py
 │   └── run_eda.py
 ├── notebooks/                # EDA y exploración (sin lógica crítica)
-├── tests/                    # pruebas de carga de datos, resumen y rutas
+├── tests/                    # carga de datos, resúmenes, rutas y métricas
 ├── results/
 │   ├── eda/                  # resúmenes JSON + informe (versionados)
 │   └── figures/              # figuras (regenerables, ignoradas por git)
 └── .github/workflows/ci.yml  # lint + pruebas + lockfile
 ```
 
-Pendiente de las próximas semanas: `configs/`, `src/uq/models/`, `src/uq/methods/`, `src/uq/metrics/` y `scripts/run_all.py`.
+Pendiente de las próximas semanas: `configs/`, `src/uq/models/`, `src/uq/methods/`, `src/uq/data/splits.py`, `src/uq/train.py`, `src/uq/evaluate.py` y `scripts/run_all.py`.
 
 El código y los nombres de variables están en inglés (para que el repositorio sea reutilizable fuera del ámbito hispanohablante); la documentación de usuario, los informes generados y la tesis están en español.
 
@@ -188,7 +191,7 @@ Verificadas en las fuentes oficiales (PyPI y python.org) el **18 de noviembre de
 
 - [x] Estructura del repositorio y entorno reproducible (Python 3.14, `uv`, CUDA verificado)
 - [x] Análisis exploratorio mínimo de los dos conjuntos de datos
-- [ ] Métricas implementadas y probadas
+- [x] Métricas implementadas y probadas
 - [ ] Líneas base y *temperature scaling*
 - [ ] MC Dropout y Deep Ensembles
 - [ ] Predicción conforme
