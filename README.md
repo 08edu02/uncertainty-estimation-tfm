@@ -60,7 +60,9 @@ Implementadas **desde cero** en `src/uq/metrics/`, con pruebas de respuesta cono
 
 ## Protocolo experimental
 
-- Particiones de entrenamiento, validación, calibración y prueba, estratificadas y con índices guardados. El conjunto de prueba solo se usa en la evaluación final.
+- Particiones de entrenamiento, validación, calibración y prueba, estratificadas y con índices guardados en `data/splits/*.json`. El conjunto de prueba solo se usa en la evaluación final.
+- **Crédito:** se excluyen las 56 filas duplicadas y se reparte 60/10/10/20 (17 966 / 2 994 / 2 994 / 5 990).
+- **Imágenes:** el test oficial (624) queda intacto; los 5 232 de train+val se reparten 80/10/10 (4 185 / 523 / 524).
 - El umbral de abstención y el parámetro de temperatura se ajustan con validación; la predicción conforme usa un conjunto de calibración separado.
 - Mismos modelos base, mismas particiones y mismo presupuesto de ajuste para todos los métodos.
 - Semillas fijas y registradas; versiones de las dependencias bloqueadas en un archivo de bloqueo.
@@ -131,21 +133,22 @@ uncertainty-estimation-tfm/
 ├── CITATION.cff
 ├── src/uq/
 │   ├── settings.py           # rutas y variables de entorno
-│   ├── data/                 # credit.py, pneumonia.py
+│   ├── data/                 # credit.py, pneumonia.py, splits.py
+│   ├── models/               # mlp.py (tabular), cnn.py (28×28)
 │   ├── eda/                  # summary.py (JSON), figures.py (PNG)
 │   └── metrics/              # calibración, detección de errores, selectiva, conforme
 ├── scripts/
 │   ├── download_data.py
 │   └── run_eda.py
 ├── notebooks/                # EDA y exploración (sin lógica crítica)
-├── tests/                    # carga de datos, resúmenes, rutas y métricas
+├── tests/                    # carga de datos, particiones, métricas, modelos y rutas
 ├── results/
 │   ├── eda/                  # resúmenes JSON + informe (versionados)
 │   └── figures/              # figuras (regenerables, ignoradas por git)
 └── .github/workflows/ci.yml  # lint + pruebas + lockfile
 ```
 
-Pendiente de las próximas semanas: `configs/`, `src/uq/models/`, `src/uq/methods/`, `src/uq/data/splits.py`, `src/uq/train.py`, `src/uq/evaluate.py` y `scripts/run_all.py`.
+Pendiente de las próximas semanas: `configs/`, `src/uq/methods/`, `src/uq/train.py`, `src/uq/evaluate.py` y `scripts/run_all.py`.
 
 El código y los nombres de variables están en inglés (para que el repositorio sea reutilizable fuera del ámbito hispanohablante); la documentación de usuario, los informes generados y la tesis están en español.
 
